@@ -1,3 +1,4 @@
+import java.util.*;
 public class Facturador{
 
 	//Repertorio de conciertos del grupo
@@ -13,7 +14,7 @@ public class Facturador{
 
 	static String cliente = "Ayuntamiento de Badajoz";
 
-	public static void main(String[] args) throws Exception{
+		public static void main(String[] args) {
 		Double totalFactura = 0d;
 		Integer creditos = 0;
 
@@ -22,36 +23,50 @@ public class Facturador{
 
 		for(int i = 0; i < actuaciones.length; i++){
 			Integer iConcierto = actuaciones[i][0];
-			Double importeActuacion = 0d;
-
-			switch (repertorio[iConcierto][1]){
-				case "heavy":
-					importeActuacion = 4000d;
-					if (actuaciones[i][1] > 500)
-						importeActuacion += 20 * (actuaciones[i][1] - 500);
-					break;
-				case "rock":
-					importeActuacion = 3000d;
-					if (actuaciones[i][1] > 1000)
-						importeActuacion += 30 * (actuaciones[i][1] - 1000);
-					break;
-				default:
-					throw new Exception("Tipo de concierto desconocido.");
-			}
+			Integer asistentes = actuaciones[i][1];  
+			String tipoConcierto = repertorio[iConcierto][1];  
 			
+			Double importeActuacion = calcularImporteActuacion(tipoConcierto, asistentes);
 			totalFactura += importeActuacion;
 
-			creditos += Math.max(actuaciones[i][1] - 500, 0);
-			if (repertorio[iConcierto][1].equals("heavy"))
-				creditos += actuaciones[i][1] / 5;
+			creditos += calcularCreditos(tipoConcierto, asistentes);
 
 			System.out.println("\tConcierto: " + repertorio[iConcierto][0]);
-			System.out.println("\t\tAsistentes: " + actuaciones[i][1]);
+			System.out.println("\t\tAsistentes: " + asistentes);
 		}
+		
+		imprimirFactura(totalFactura, creditos);
+	}
+		private static Double calcularImporteActuacion(String tipoConcierto, Integer asistentes) {
+		Double importeActuacion = 0d;
+		
+		switch (tipoConcierto){
+			case "heavy":
+				importeActuacion = 4000d;
+				if (asistentes > 500)
+					importeActuacion += 20 * (asistentes - 500);
+				break;
+			case "rock":
+				importeActuacion = 3000d;
+				if (asistentes > 1000)
+					importeActuacion += 30 * (asistentes - 1000);
+				break;
+			default:
+				throw new RuntimeException("Tipo de concierto desconocido.");
+		}
+		
+		return importeActuacion;
+	}
+		private static Integer calcularCreditos(String tipoConcierto, Integer asistentes) {
+		Integer creditos = Math.max(asistentes - 500, 0);
+		if (tipoConcierto.equals("heavy"))
+			creditos += asistentes / 5;
+		return creditos;
+	}
+		private static void imprimirFactura(Double totalFactura, Integer creditos) {
 		System.out.println("BASE IMPONIBLE: " + totalFactura + " euros");
-		System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * 0.21);
-		System.out.printf("TOTAL: %.2f euros\n", totalFactura * 1.21);
+		System.out.printf(Locale.US, "IVA (21%%): %.2f euros\n", totalFactura * 0.21);
+		System.out.printf(Locale.US, "TOTAL: %.2f euros\n", totalFactura * 1.21);
 		System.out.println("Créditos obtenidos: " + creditos);
-
 	}
 }
