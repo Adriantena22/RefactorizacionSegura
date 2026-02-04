@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.Locale;
+
 public class Facturador{
 
 	//Repertorio de conciertos del grupo
@@ -14,7 +15,15 @@ public class Facturador{
 
 	static String cliente = "Ayuntamiento de Badajoz";
 
-		public static void main(String[] args) {
+	private static final double BASE_HEAVY = 4000d;
+	private static final double BASE_ROCK = 3000d;
+	private static final int UMBRAL_HEAVY = 500;
+	private static final int UMBRAL_ROCK = 1000;
+	private static final double EXTRA_HEAVY = 20d;
+	private static final double EXTRA_ROCK = 30d;
+	private static final double IVA = 0.21;
+
+	public static void main(String[] args) {
 		Double totalFactura = 0d;
 		Integer creditos = 0;
 
@@ -37,19 +46,20 @@ public class Facturador{
 		
 		imprimirFactura(totalFactura, creditos);
 	}
-		private static Double calcularImporteActuacion(String tipoConcierto, Integer asistentes) {
+
+	private static Double calcularImporteActuacion(String tipoConcierto, Integer asistentes) {
 		Double importeActuacion = 0d;
 		
 		switch (tipoConcierto){
 			case "heavy":
-				importeActuacion = 4000d;
-				if (asistentes > 500)
-					importeActuacion += 20 * (asistentes - 500);
+				importeActuacion = BASE_HEAVY;
+				if (asistentes > UMBRAL_HEAVY)
+					importeActuacion += EXTRA_HEAVY * (asistentes - UMBRAL_HEAVY);
 				break;
 			case "rock":
-				importeActuacion = 3000d;
-				if (asistentes > 1000)
-					importeActuacion += 30 * (asistentes - 1000);
+				importeActuacion = BASE_ROCK;
+				if (asistentes > UMBRAL_ROCK)
+					importeActuacion += EXTRA_ROCK * (asistentes - UMBRAL_ROCK);
 				break;
 			default:
 				throw new RuntimeException("Tipo de concierto desconocido.");
@@ -57,16 +67,18 @@ public class Facturador{
 		
 		return importeActuacion;
 	}
-		private static Integer calcularCreditos(String tipoConcierto, Integer asistentes) {
+
+	private static Integer calcularCreditos(String tipoConcierto, Integer asistentes) {
 		Integer creditos = Math.max(asistentes - 500, 0);
 		if (tipoConcierto.equals("heavy"))
 			creditos += asistentes / 5;
 		return creditos;
 	}
-		private static void imprimirFactura(Double totalFactura, Integer creditos) {
+
+	private static void imprimirFactura(Double totalFactura, Integer creditos) {
 		System.out.println("BASE IMPONIBLE: " + totalFactura + " euros");
-		System.out.printf(Locale.US, "IVA (21%%): %.2f euros\n", totalFactura * 0.21);
-		System.out.printf(Locale.US, "TOTAL: %.2f euros\n", totalFactura * 1.21);
+		System.out.printf(Locale.US, "IVA (21%%): %.2f euros\n", totalFactura * IVA);
+		System.out.printf(Locale.US, "TOTAL: %.2f euros\n", totalFactura * (1 + IVA));
 		System.out.println("Créditos obtenidos: " + creditos);
 	}
 }
