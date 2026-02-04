@@ -2,19 +2,20 @@ import java.util.Locale;
 
 public class Facturador{
 
-	//Repertorio de conciertos del grupo
-	static String[][] repertorio = {
+	// Catálogo de conciertos disponibles
+	static String[][] conciertos = {
 		 {"Tributo Robe", "heavy"}
 		,{"Homaneje Queen", "rock"}
 		,{"Magia Knoppler", "rock"}
 		,{"Demonios Rojos", "heavy"}
 	};
 
-	//Actuaciones realizadas indicando el concierto ofrecido y audiencias obtenidas.
-	static Integer[][] actuaciones = {{0, 2000}, {2, 1200}, {0, 950}, {3, 1140}};
+	// Actuaciones realizadas en el período facturado
+	static Integer[][] actuacionesRealizadas = {{0, 2000}, {2, 1200}, {0, 950}, {3, 1140}};
 
 	static String cliente = "Ayuntamiento de Badajoz";
 
+	// CONSTANTES - REFACTOR 2
 	private static final double BASE_HEAVY = 4000d;
 	private static final double BASE_ROCK = 3000d;
 	private static final int UMBRAL_HEAVY = 500;
@@ -30,17 +31,17 @@ public class Facturador{
 		System.out.println("FACTURA DE ACTUACIONES");
 		System.out.println("Cliente: " + cliente);
 
-		for(int i = 0; i < actuaciones.length; i++){
-			Integer iConcierto = actuaciones[i][0];
-			Integer asistentes = actuaciones[i][1];  
-			String tipoConcierto = repertorio[iConcierto][1];  
+		for(int indiceActuacion = 0; indiceActuacion < actuacionesRealizadas.length; indiceActuacion++){
+			Integer indiceConcierto = actuacionesRealizadas[indiceActuacion][0];
+			Integer asistentes = actuacionesRealizadas[indiceActuacion][1];  
+			String tipoConcierto = conciertos[indiceConcierto][1];  
 			
 			Double importeActuacion = calcularImporteActuacion(tipoConcierto, asistentes);
 			totalFactura += importeActuacion;
 
 			creditos += calcularCreditos(tipoConcierto, asistentes);
 
-			System.out.println("\tConcierto: " + repertorio[iConcierto][0]);
+			System.out.println("\tConcierto: " + conciertos[indiceConcierto][0]);
 			System.out.println("\t\tAsistentes: " + asistentes);
 		}
 		
