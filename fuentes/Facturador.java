@@ -1,13 +1,37 @@
 import java.util.Locale;
 
 public class Facturador{
+	
+	enum TipoConcierto {
+		HEAVY("heavy"),
+		ROCK("rock");
+		
+		private final String codigo;
+		
+		TipoConcierto(String codigo) {
+			this.codigo = codigo;
+		}
+		
+		public String getCodigo() {
+			return codigo;
+		}
+		
+		public static TipoConcierto fromString(String codigo) {
+			for (TipoConcierto tipo : values()) {
+				if (tipo.codigo.equals(codigo)) {
+					return tipo;
+				}
+			}
+			throw new IllegalArgumentException("Tipo de concierto desconocido: " + codigo);
+		}
+	}
 
 	// Catálogo de conciertos disponibles
 	static String[][] conciertos = {
-		 {"Tributo Robe", "heavy"}
-		,{"Homaneje Queen", "rock"}
-		,{"Magia Knoppler", "rock"}
-		,{"Demonios Rojos", "heavy"}
+		 {"Tributo Robe", TipoConcierto.HEAVY.getCodigo()}
+		,{"Homaneje Queen", TipoConcierto.ROCK.getCodigo()}
+		,{"Magia Knoppler", TipoConcierto.ROCK.getCodigo()}
+		,{"Demonios Rojos", TipoConcierto.HEAVY.getCodigo()}
 	};
 
 	// Actuaciones realizadas en el período facturado
@@ -34,7 +58,8 @@ public class Facturador{
 		for(int indiceActuacion = 0; indiceActuacion < actuacionesRealizadas.length; indiceActuacion++){
 			Integer indiceConcierto = actuacionesRealizadas[indiceActuacion][0];
 			Integer asistentes = actuacionesRealizadas[indiceActuacion][1];  
-			String tipoConcierto = conciertos[indiceConcierto][1];  
+			String codigoTipoConcierto = conciertos[indiceConcierto][1];  
+			TipoConcierto tipoConcierto = TipoConcierto.fromString(codigoTipoConcierto);
 			
 			Double importeActuacion = calcularImporteActuacion(tipoConcierto, asistentes);
 			totalFactura += importeActuacion;
@@ -48,30 +73,28 @@ public class Facturador{
 		imprimirFactura(totalFactura, creditos);
 	}
 
-	private static Double calcularImporteActuacion(String tipoConcierto, Integer asistentes) {
+	private static Double calcularImporteActuacion(TipoConcierto tipoConcierto, Integer asistentes) {
 		Double importeActuacion = 0d;
 		
 		switch (tipoConcierto){
-			case "heavy":
+			case HEAVY:
 				importeActuacion = BASE_HEAVY;
 				if (asistentes > UMBRAL_HEAVY)
 					importeActuacion += EXTRA_HEAVY * (asistentes - UMBRAL_HEAVY);
 				break;
-			case "rock":
+			case ROCK:
 				importeActuacion = BASE_ROCK;
 				if (asistentes > UMBRAL_ROCK)
 					importeActuacion += EXTRA_ROCK * (asistentes - UMBRAL_ROCK);
 				break;
-			default:
-				throw new RuntimeException("Tipo de concierto desconocido.");
 		}
 		
 		return importeActuacion;
 	}
 
-	private static Integer calcularCreditos(String tipoConcierto, Integer asistentes) {
+	private static Integer calcularCreditos(TipoConcierto tipoConcierto, Integer asistentes) {
 		Integer creditos = Math.max(asistentes - 500, 0);
-		if (tipoConcierto.equals("heavy"))
+		if (tipoConcierto == TipoConcierto.HEAVY)
 			creditos += asistentes / 5;
 		return creditos;
 	}
